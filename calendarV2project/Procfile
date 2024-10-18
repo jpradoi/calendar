@@ -1,1 +1,1 @@
-web: calendarV2.wsgi --log-file -
+web: calendarV2project.calendarV2.wsgi:application --log-file -
