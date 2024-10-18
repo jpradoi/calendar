@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'calendarV2project.calendarV2app',
+    'calendarV2app',
     'rest_framework',
 ]
 
