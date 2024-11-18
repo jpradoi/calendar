@@ -1,5 +1,5 @@
 from rest_framework import routers
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import ( TokenObtainPairView, TokenRefreshView )
 from django.urls import path, include
 from .views import (
     UsuarioViewSet,
@@ -8,7 +8,6 @@ from .views import (
     HorarioViewSet,
     EventoViewSet,
     CalendarioViewSet,
-    LoginView
 )
 
 router = routers.DefaultRouter()
@@ -22,4 +21,5 @@ router.register(r'calendarios', CalendarioViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', TokenObtainPairView.as_view(), name='login'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
