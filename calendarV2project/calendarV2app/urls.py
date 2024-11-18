@@ -1,5 +1,6 @@
 from rest_framework import routers
 from django.urls import path, include
+import views
 from .views import (
     UsuarioViewSet,
     AsignaturaViewSet,
@@ -7,7 +8,6 @@ from .views import (
     HorarioViewSet,
     EventoViewSet,
     CalendarioViewSet,
-    LoginUsuarioView,
 )
 
 router = routers.DefaultRouter()
@@ -20,5 +20,5 @@ router.register(r'calendarios', CalendarioViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login/', LoginUsuarioView.as_view(), name='login_usuario'),
+    path('login/', views.login_usuario, name='login_usuario'),
 ]

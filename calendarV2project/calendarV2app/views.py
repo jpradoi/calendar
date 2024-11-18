@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.views import View
-from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login
 from rest_framework.permissions import AllowAny
 from .models import Usuario, Asignatura, UsuarioAsignatura, Horario, Evento, Calendario
@@ -39,14 +38,18 @@ class CalendarioViewSet(viewsets.ModelViewSet):
     queryset = Calendario.objects.all()
     serializer_class = CalendarioSerializer
 
-class LoginUsuarioView(View):
-    def post(self, request, *args, **kwargs):
-        rut = request.data.get('rut')
-        password = request.data.get('password')
+@api_view(['POST'])
+def login_usuario(request):
+    # Obtener las credenciales del cuerpo de la solicitud
+    rut = request.data.get('rut')
+    password = request.data.get('password')
 
-        user = authenticate(request, username=rut, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({"message": "Login exitoso"}, status=200)
-        else:
-            return JsonResponse({"error": "Credenciales incorrectas"}, status=400)
+    # Intentar autenticar al usuario
+    user = authenticate(request, username=rut, password=password)
+
+    if user is not None:
+        # Si el usuario es autenticado correctamente, respondemos con un mensaje de éxito
+        return Response({"message": "Login exitoso"}, status=status.HTTP_200_OK)
+    else:
+        # Si las credenciales son incorrectas, respondemos con un error
+        return Response({"message": "Credenciales incorrectas"}, status=status.HTTP_400_BAD_REQUEST)
