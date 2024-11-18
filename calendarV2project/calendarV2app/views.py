@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
@@ -39,17 +40,16 @@ class CalendarioViewSet(viewsets.ModelViewSet):
     serializer_class = CalendarioSerializer
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         rut = request.data.get('rut')
         contraseña = request.data.get('contraseña')
 
-        try:
-            usuario = authenticate(request, username=rut, password=contraseña)
-            if usuario:
-                return JsonResponse({"message": "Inicio de sesión exitoso", "rut": usuario.rut}, status=200)
-            else:
-                return JsonResponse({"error": "Credenciales incorrectas"}, status=401)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        # Autenticar usuario
+        usuario = authenticate(username=rut, password=contraseña)
+
+        if usuario is not None:
+            # Credenciales correctas
+            return Response({"message": "Inicio de sesión exitoso"}, status=status.HTTP_200_OK)
+        else:
+            # Credenciales incorrectas
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
