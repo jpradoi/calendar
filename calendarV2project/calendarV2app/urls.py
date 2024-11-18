@@ -1,4 +1,5 @@
 from rest_framework import routers
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.urls import path, include
 from .views import (
     UsuarioViewSet,
@@ -6,7 +7,8 @@ from .views import (
     UsuarioAsignaturaViewSet,
     HorarioViewSet,
     EventoViewSet,
-    CalendarioViewSet
+    CalendarioViewSet,
+    LoginView
 )
 
 router = routers.DefaultRouter()
@@ -19,4 +21,5 @@ router.register(r'calendarios', CalendarioViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('login/', TokenObtainPairView.as_view(), name='login'),
 ]
