@@ -2,60 +2,36 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class UsuarioManager(BaseUserManager):
-    def create_user(self, rut, nombre, correo, rol, password=None):
+    def create_user(self, rut, password=None, **extra_fields):
         if not rut:
-            raise ValueError("El usuario debe tener un RUT")
-        if not correo:
-            raise ValueError("El usuario debe tener un correo")
+            raise ValueError('El usuario debe tener un rut')
+        user = self.model(rut=rut, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-        usuario = self.model(
-            rut=rut,
-            nombre=nombre,
-            correo=self.normalize_email(correo),
-            rol=rol,
-        )
-        usuario.set_password(password)  # Hashear la contraseña
-        usuario.save(using=self._db)
-        return usuario
-
-    def create_superuser(self, rut, nombre, correo, rol, password):
-        usuario = self.create_user(
-            rut=rut,
-            nombre=nombre,
-            correo=correo,
-            rol=rol,
-            password=password,
-        )
-        usuario.is_admin = True
-        usuario.save(using=self._db)
-        return usuario
-
+    def create_superuser(self, rut, password=None, **extra_fields):
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(rut, password, **extra_fields)
 
 class Usuario(AbstractBaseUser):
-    rut = models.IntegerField(unique=True, primary_key=True)
+    rut = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=100)
-    correo = models.EmailField(max_length=100, unique=True)
+    correo = models.EmailField(max_length=100)
+    contraseña = models.CharField(max_length=100)
     rol = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'rut'
+    REQUIRED_FIELDS = ['nombre', 'correo']
 
     objects = UsuarioManager()
 
-    USERNAME_FIELD = "rut"
-    REQUIRED_FIELDS = ["nombre", "correo", "rol"]
-
     def __str__(self):
-        return f"{self.nombre} ({self.rut})"
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
+        return self.rut
 
 class Asignatura(models.Model):
     asignatura_id = models.AutoField(primary_key=True)

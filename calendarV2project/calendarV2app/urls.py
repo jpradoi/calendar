@@ -7,6 +7,7 @@ from .views import (
     HorarioViewSet,
     EventoViewSet,
     CalendarioViewSet,
+    LoginUsuarioView,
 )
 
 router = routers.DefaultRouter()
@@ -19,4 +20,5 @@ router.register(r'calendarios', CalendarioViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('login/', LoginUsuarioView.as_view(), name='login_usuario'),
 ]
