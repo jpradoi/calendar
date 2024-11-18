@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.urls import path, include
-import views
+from . import views
 from .views import (
     UsuarioViewSet,
     AsignaturaViewSet,
