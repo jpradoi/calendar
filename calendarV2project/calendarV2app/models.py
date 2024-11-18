@@ -1,13 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.hashers import make_password
 
-from django.db import models
-
-class Usuario(models.Model):
+class Usuario(AbstractBaseUser):
     rut = models.IntegerField(primary_key=True)
     rol = models.CharField(max_length=50)
     nombre = models.CharField(max_length=100)
     correo = models.EmailField(max_length=100)
     contraseña = models.CharField(max_length=100)
+
+    def set_password(self, raw_password):
+        self.contraseña = make_password(raw_password)
+        self.save()
 
 class Asignatura(models.Model):
     asignatura_id = models.AutoField(primary_key=True)
