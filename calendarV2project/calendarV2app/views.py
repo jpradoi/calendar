@@ -52,35 +52,29 @@ def login_docente(request):
             return JsonResponse({'message': 'Invalid password'}, status=400)
     except Usuario.DoesNotExist:
         return JsonResponse({'message': 'User does not exist'}, status=404)
-    
+
 @api_view(['GET'])
-def class_schedule(request):
-    # Get today's day name in Spanish (e.g., 'Lunes', 'Martes', etc.)
-    today = timezone.localtime(timezone.now())
-    current_day = today.strftime('%A')  # Get day in English (e.g., 'Monday')
-
-    # Map English day names to Spanish
-    day_translation = {
-        'Monday': 'Lunes',
-        'Tuesday': 'Martes',
-        'Wednesday': 'Miércoles',
-        'Thursday': 'Jueves',
-        'Friday': 'Viernes',
-        'Saturday': 'Sábado',
-        'Sunday': 'Domingo'
-    }
-
-    spanish_day = day_translation.get(current_day, '')
-
-    if not spanish_day:
-        return Response({'error': 'Unable to identify today\'s day.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Get all Asignaturas that have a Horario for the current day
-    clases_hoy = Asignatura.objects.filter(
-        horarios__dia=spanish_day
-    ).distinct()
-
-    # Serialize the data
-    serializer = AsignaturaSerializer(clases_hoy, many=True)
-
-    return Response(serializer.data)
+def get_asignaturas_para_dia(request):
+    dia = request.query_params.get('dia', None)
+    mes = request.query_params.get('mes', None)
+    
+    if dia and mes:
+        # Suponiendo que el mes es un nombre como "Enero", "Febrero", etc.
+        mes_num = datetime.strptime(mes, '%B').month  # Convierte el nombre del mes a número (Enero -> 1, etc.)
+        
+        # Aquí puedes buscar las asignaturas que tengan horarios en ese día y mes
+        asignaturas = Asignatura.objects.filter(horarios__dia=dia, horarios__asignatura__mes=mes_num)
+        
+        # Devuelves las asignaturas junto con los horarios
+        resultado = []
+        for asignatura in asignaturas:
+            horarios = Horario.objects.filter(asignatura=asignatura, dia=dia)
+            resultado.append({
+                'asignatura_id': asignatura.asignatura_id,
+                'nombre': asignatura.nombre,
+                'horarios': [{'horario_id': h.horario_id, 'dia': h.dia, 'hora_inicio': h.hora_inicio, 'hora_fin': h.hora_fin} for h in horarios]
+            })
+        
+        return Response(resultado)
+    else:
+        return Response({"error": "Faltan parámetros"}, status=400)
