@@ -37,19 +37,3 @@ class EventoViewSet(viewsets.ModelViewSet):
 class CalendarioViewSet(viewsets.ModelViewSet):
     queryset = Calendario.objects.all()
     serializer_class = CalendarioSerializer
-
-@api_view(['POST'])
-def login_usuario(request):
-    # Obtener las credenciales del cuerpo de la solicitud
-    rut = request.data.get('rut')
-    password = request.data.get('password')
-
-    # Intentar autenticar al usuario
-    user = authenticate(request, username=rut, password=password)
-
-    if user is not None:
-        # Si el usuario es autenticado correctamente, respondemos con un mensaje de éxito
-        return Response({"message": "Login exitoso"}, status=status.HTTP_200_OK)
-    else:
-        # Si las credenciales son incorrectas, respondemos con un error
-        return Response({"message": "Credenciales incorrectas"}, status=status.HTTP_400_BAD_REQUEST)
