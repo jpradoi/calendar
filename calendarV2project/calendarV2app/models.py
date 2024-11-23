@@ -22,11 +22,23 @@ class UsuarioAsignatura(models.Model):
         unique_together = ('rut', 'asignatura')
 
 class Horario(models.Model):
+    DIA_CHOICES = [
+        ('Lunes', 'Lunes'),
+        ('Martes', 'Martes'),
+        ('Miércoles', 'Miércoles'),
+        ('Jueves', 'Jueves'),
+        ('Viernes', 'Viernes'),
+        ('Sábado', 'Sábado'),
+        ('Domingo', 'Domingo'),
+    ]
     horario_id = models.AutoField(primary_key=True)
-    asignatura = models.ForeignKey('Asignatura', on_delete=models.CASCADE)
-    dia = models.CharField(max_length=20)
+    asignatura = models.ForeignKey('Asignatura', on_delete=models.CASCADE, related_name="horarios")
+    dia = models.CharField(max_length=20, choices=DIA_CHOICES)
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
+
+    def __str__(self):
+        return f"{self.asignatura.nombre} - {self.dia} ({self.hora_inicio} - {self.hora_fin})"
 
 class Evento(models.Model):
     fecha_hora_evento = models.DateTimeField()
