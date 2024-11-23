@@ -8,7 +8,7 @@ from .views import (
     EventoViewSet,
     CalendarioViewSet,
     login_docente,
-    class_schedule,
+    get_asignaturas_para_dia,
 )
 
 router = routers.DefaultRouter()
@@ -22,5 +22,5 @@ router.register(r'calendarios', CalendarioViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', login_docente, name='login'),
-    path('api/clases/horarios/', class_schedule, name='class_schedule'),
+    path('api/asignaturas/por_dia/', get_asignaturas_para_dia, name='get_asignaturas_para_dia'),
 ]
