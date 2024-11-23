@@ -1,9 +1,7 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate, login
-from rest_framework.permissions import AllowAny
+from django.http import JsonResponse
+from django.contrib.auth import authenticate
 from .models import Usuario, Asignatura, UsuarioAsignatura, Horario, Evento, Calendario
 from .serializers import (
     UsuarioSerializer,
@@ -37,3 +35,17 @@ class EventoViewSet(viewsets.ModelViewSet):
 class CalendarioViewSet(viewsets.ModelViewSet):
     queryset = Calendario.objects.all()
     serializer_class = CalendarioSerializer
+
+@api_view(['GET'])
+def login_docente(request):
+    rut = request.GET.get('rut')
+    contraseña = request.GET.get('contraseña')
+
+    try:
+        user = Usuario.objects.get(rut=rut)
+        if user.contraseña == contraseña:
+            return JsonResponse({'message': 'Login successful', 'user_id': user.rut})
+        else:
+            return JsonResponse({'message': 'Invalid password'}, status=400)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'message': 'User does not exist'}, status=404)
