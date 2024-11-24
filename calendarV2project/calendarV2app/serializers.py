@@ -12,14 +12,11 @@ class HorarioSerializer(serializers.ModelSerializer):
         fields = ['horario_id', 'asignatura', 'dia', 'hora_inicio', 'hora_fin']
 
 class AsignaturaSerializer(serializers.ModelSerializer):
-    horarios = HorarioSerializer(many=True)
+    horarios = HorarioSerializer(many=True, required=False)
 
     class Meta:
         model = Asignatura
         fields = ['asignatura_id', 'nombre', 'horarios']
-        extra_kwargs = {
-            'horario': {'required': False}
-        }
 
 class UsuarioAsignaturaSerializer(serializers.ModelSerializer):
     class Meta:
