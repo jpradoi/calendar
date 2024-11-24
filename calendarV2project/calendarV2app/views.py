@@ -78,3 +78,30 @@ def get_asignaturas_para_dia(request):
         return Response(resultado)
     else:
         return Response({"error": "Faltan parámetros"}, status=400)
+    
+@api_view(['GET'])
+def get_eventos_para_dia(request):
+    dia = request.query_params.get('dia', None)
+    mes = request.query_params.get('mes', None)
+    anio = request.query_params.get('anio', None)
+
+    if dia and mes and anio:
+        try:
+            fecha = datetime.strptime(f"{anio}-{mes}-{dia}", '%Y-%B-%d').date()  # Parseamos la fecha
+        except ValueError:
+            return Response({"error": "Formato de fecha inválido"}, status=400)
+
+        eventos = Evento.objects.filter(fecha_hora_evento__date=fecha)
+        
+        resultado = [
+            {
+                'id': evento.id,
+                'fecha_hora_evento': evento.fecha_hora_evento.isoformat(),
+                'asignatura': evento.asignatura.nombre,
+                'descripcion': evento.descripcion
+            } for evento in eventos
+        ]
+
+        return Response(resultado)
+
+    return Response({"error": "Faltan parámetros (día, mes o año)"}, status=400)
