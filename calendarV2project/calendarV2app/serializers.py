@@ -9,7 +9,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class HorarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Horario
-        fields = ['horario_id', 'dia', 'hora_inicio', 'hora_fin']
+        fields = ['horario_id', 'asignatura', 'dia', 'hora_inicio', 'hora_fin']
 
 class AsignaturaSerializer(serializers.ModelSerializer):
     horarios = HorarioSerializer(many=True)
