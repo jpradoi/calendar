@@ -17,6 +17,9 @@ class AsignaturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asignatura
         fields = ['asignatura_id', 'nombre', 'horarios']
+        extra_kwargs = {
+            'horario': {'required': False}
+        }
 
 class UsuarioAsignaturaSerializer(serializers.ModelSerializer):
     class Meta:

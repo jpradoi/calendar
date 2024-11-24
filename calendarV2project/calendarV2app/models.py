@@ -32,7 +32,7 @@ class Horario(models.Model):
         ('Domingo', 'Domingo'),
     ]
     horario_id = models.AutoField(primary_key=True)
-    asignatura = models.ForeignKey('Asignatura', on_delete=models.CASCADE, related_name="horarios")
+    asignatura = models.ForeignKey('Asignatura', on_delete=models.CASCADE, null=True, blank=True, related_name="horarios")
     dia = models.CharField(max_length=20, choices=DIA_CHOICES)
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
